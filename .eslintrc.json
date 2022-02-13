@@ -1,0 +1,21 @@
+{
+    "env": {
+        "browser": true,
+        "commonjs": true,
+        "es2021": true
+    },
+    "plugins": [
+        "deprecate",
+        "sonarjs"
+    ],
+    "extends": [
+        "standard",
+        "plugin:sonarjs/recommended"
+    ],
+    "parserOptions": {
+        "ecmaVersion": "latest"
+    },
+    "rules": {
+        "indent": "off"
+    }
+}
