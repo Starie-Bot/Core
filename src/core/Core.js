@@ -2,6 +2,7 @@ const { Client, Intents } = require('discord.js')
 const { existsSync, mkdirSync } = require('node:fs')
 const CommandRegistry = require('../commands/CommandRegistry')
 const { GetConfigPath, CopyDefaultConfig } = require('../config/Config')
+const { Error } = require('../console/Console')
 const { PrintElapsed } = require('../debug/Debug')
 const Default2Phrase = require('./Phrases/Default2Phrase')
 const DefaultPhrase = require('./Phrases/DefaultPhrase')
@@ -28,6 +29,7 @@ module.exports = class Core {
          */
         this.client = new Client({ intents: Intents.FLAGS.GUILDS })
         this.client.once('ready', this.onReady.bind(this))
+        this.client.on('error', Error)
 
         this.login() // Log into Discord
 
@@ -35,8 +37,7 @@ module.exports = class Core {
          * The command registry.
          * @type {CommandRegistry}
          */
-        this.registry = new CommandRegistry(this) // Setup the command handler.
-        this.client.on('interactionCreate', this.registry.onCommand.bind(this.registry)) // Setup the event for handling fired events
+        this.registry = null
     }
 
     /**
@@ -64,7 +65,7 @@ module.exports = class Core {
      * Run a log-in process on the client.
      */
     login () {
-        this.client.login(TOKEN)
+        this.client.login(TOKEN).catch(Error)
     }
 
     setRandomPhrase () {
@@ -80,6 +81,9 @@ module.exports = class Core {
 
         this.setRandomPhrase()
         setInterval(this.setRandomPhrase.bind(this), 10000)
+
+        this.registry = new CommandRegistry(this) // Setup the command handler.
+        this.client.on('interactionCreate', this.registry.onCommand.bind(this.registry)) // Setup the event for handling fired events
     }
 
     onGuildInitalize () {

@@ -2,7 +2,7 @@ const chalk = require('chalk')
 const { appendFileSync, writeFileSync, existsSync } = require('node:fs')
 const path = require('node:path')
 
-const latestLog = path.resolve('./', 'logs', 'latest.log')
+const latestLog = path.resolve('logs', 'latest.log')
 
 if (existsSync(latestLog)) writeFileSync(latestLog, '')
 
@@ -18,5 +18,5 @@ module.exports.Warning = (message) => {
 
 module.exports.Error = (message) => {
     console.log(chalk.red(`[Error] ${message}`))
-    writeFileSync(path.resolve('./', 'logs', 'error.log', message))
+    writeFileSync(path.resolve('logs', 'error.log'), String(message))
 }
