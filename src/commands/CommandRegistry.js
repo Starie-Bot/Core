@@ -1,11 +1,12 @@
 const { REST } = require('@discordjs/rest')
 const { readdirSync } = require('node:fs')
 const path = require('node:path')
+const { GetConfigPath } = require('../config/Config')
 const { Log } = require('../console/Console')
 const { PrintElapsed } = require('../debug/Debug')
 const { Post } = require('../rest/CommandREST')
 
-const { TOKEN } = require(path.resolve('./', 'config', 'config.json'))
+const { TOKEN } = require(GetConfigPath())
 
 module.exports = class CommandRegistry {
     constructor (core) {
@@ -21,7 +22,7 @@ module.exports = class CommandRegistry {
         this.rest = new REST({ version: '9' }).setToken(TOKEN)
 
         this.getCommands().forEach(this.Register.bind(this)) // Register commands from the command directory.
-        Post(this.rest, Array.from(this.commands))
+        Post(this.rest, Array.from(this.commands.values()))
 
         PrintElapsed(this.core, 'Command Initalization Time: %sms')
     }
@@ -39,7 +40,6 @@ module.exports = class CommandRegistry {
     /**
      * Register a command into the command handler.
      * @param {Command} command The command to register
-     * @event onCommandRegister
      */
     Register (command) {
         this.commands.set(command.name, command)

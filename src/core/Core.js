@@ -1,9 +1,10 @@
 const { Client, Intents } = require('discord.js')
-const { TOKEN } = require('../../config/config.json')
-const { existsSync, mkdirSync, copyFileSync } = require('node:fs')
-const path = require('node:path')
+const { existsSync, mkdirSync } = require('node:fs')
 const CommandRegistry = require('../commands/CommandRegistry')
+const { GetConfigPath, CopyDefaultConfig } = require('../config/Config')
 const { PrintElapsed } = require('../debug/Debug')
+
+const { TOKEN } = require(GetConfigPath())
 
 const coreDirectories = ['config', 'commands', 'logs']
 
@@ -41,17 +42,10 @@ module.exports = class Core {
     initalizeCore () {
         // Make core directories.
         coreDirectories.forEach((directory) => {
-            if (existsSync(directory)) return
-            mkdirSync(directory)
+            if (!existsSync(directory)) mkdirSync(directory)
         })
 
-        // Copy default config if not existant.
-        if (!existsSync(path.resolve('config', 'config.json'))) {
-            copyFileSync(
-                path.resolve('config', 'config.default.json'),
-                path.resolve('config', 'config.json')
-            )
-        }
+        CopyDefaultConfig()
     }
 
     /**
