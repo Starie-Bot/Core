@@ -1,11 +1,11 @@
 const { Client, Intents } = require('discord.js')
 const { TOKEN } = require('../../config/config.json')
-const { Log } = require('../console/Console')
 const { existsSync, mkdirSync, copyFileSync } = require('node:fs')
 const path = require('node:path')
 const CommandRegistry = require('../commands/CommandRegistry')
+const { PrintElapsed } = require('../debug/Debug')
 
-const coreDirectories = ['config', 'commands']
+const coreDirectories = ['config', 'commands', 'logs']
 
 module.exports = class Core {
     constructor () {
@@ -32,7 +32,7 @@ module.exports = class Core {
          * @type {CommandRegistry}
          */
         this.registry = new CommandRegistry(this) // Setup the command handler.
-        this.client.on('interactionCreate', this.registry.onCommand) // Setup the event for handling fired events
+        this.client.on('interactionCreate', this.registry.onCommand.bind(this.registry)) // Setup the event for handling fired events
     }
 
     /**
@@ -71,12 +71,9 @@ module.exports = class Core {
     }
 
     onReady () {
-        // TODO; Implement
-        Log('Client ready!')
-        Log(`Initalization time: ${new Date().getTime() - this.startTick}ms`)
+        PrintElapsed(this, 'Initalization time: %sms')
 
-        // Run a task on each guild in the guild-list after initalization.
-        this.getClient().guilds.cache.forEach(
+        this.getClient().guilds.cache.forEach( // Run a task on each guild in the guild-list after initalization.
             (guild) => this.onGuildInitalize(guild))
     }
 
