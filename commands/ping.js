@@ -9,8 +9,11 @@ class PingCommand extends Command {
             .setDefaultPermission(false)
     }
 
-    run (interaction) {
-        interaction.reply({ content: 'Pong!', ephemeral: true })
+    async run (interaction) {
+        const startTick = new Date().getTime()
+
+        await interaction.deferReply({ ephemeral: true })
+        interaction.editReply({ content: `Pong! Command response time is **${new Date().getTime() - startTick}**ms` })
     }
 }
 

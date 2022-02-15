@@ -3,6 +3,8 @@ const { existsSync, mkdirSync } = require('node:fs')
 const CommandRegistry = require('../commands/CommandRegistry')
 const { GetConfigPath, CopyDefaultConfig } = require('../config/Config')
 const { PrintElapsed } = require('../debug/Debug')
+const Default2Phrase = require('./Phrases/Default2Phrase')
+const DefaultPhrase = require('./Phrases/DefaultPhrase')
 
 const { TOKEN } = require(GetConfigPath())
 
@@ -10,13 +12,14 @@ const coreDirectories = ['config', 'commands', 'logs']
 
 module.exports = class Core {
     constructor () {
-        this.initalizeCore() // Initalize the default features
+        this.initalize() // Initalize the default features
 
         /**
          * The tick of which the bot was powered on.
          * @type {Number}
          */
         this.startTick = new Date().getTime()
+        this.phrases = [new DefaultPhrase(), new Default2Phrase()]
 
         /**
          * A local reference to the Discord client.
@@ -39,7 +42,7 @@ module.exports = class Core {
     /**
      * Initalize the core systems such as configuration
      */
-    initalizeCore () {
+    initalize () {
         // Make core directories.
         coreDirectories.forEach((directory) => {
             if (!existsSync(directory)) mkdirSync(directory)
@@ -64,11 +67,19 @@ module.exports = class Core {
         this.client.login(TOKEN)
     }
 
+    setRandomPhrase () {
+        this.client.user.setPresence(
+            { activities: [{ name: this.phrases[Math.floor(Math.random() * this.phrases.length)].text }], status: 'online' })
+    }
+
     onReady () {
         PrintElapsed(this, 'Initalization time: %sms')
 
         this.getClient().guilds.cache.forEach( // Run a task on each guild in the guild-list after initalization.
             (guild) => this.onGuildInitalize(guild))
+
+        this.setRandomPhrase()
+        setInterval(this.setRandomPhrase.bind(this), 10000)
     }
 
     onGuildInitalize () {
