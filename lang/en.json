@@ -1,0 +1,3 @@
+{
+    "command.ping.message": "Pong! Command response time is **%s**ms"
+}

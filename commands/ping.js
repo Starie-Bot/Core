@@ -1,4 +1,5 @@
 const Command = require('../src/commands/Command')
+const { Translate } = require('../src/i18n/i18n')
 
 class PingCommand extends Command {
     constructor () {
@@ -13,7 +14,11 @@ class PingCommand extends Command {
         const startTick = new Date().getTime()
 
         await interaction.deferReply({ ephemeral: true })
-        interaction.editReply({ content: `Pong! Command response time is **${new Date().getTime() - startTick}**ms` })
+
+        interaction.editReply({
+            content: Translate(interaction.locale, 'command.ping.message')
+                        .replace('%s', new Date().getTime() - startTick) // Make the MS text
+        })
     }
 }
 

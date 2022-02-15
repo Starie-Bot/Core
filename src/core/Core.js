@@ -8,7 +8,7 @@ const DefaultPhrase = require('./Phrases/DefaultPhrase')
 
 const { TOKEN } = require(GetConfigPath())
 
-const coreDirectories = ['config', 'commands', 'logs']
+const coreDirectories = ['config', 'commands', 'logs', 'lang']
 
 module.exports = class Core {
     constructor () {
