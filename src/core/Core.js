@@ -68,6 +68,9 @@ module.exports = class Core {
         this.client.login(TOKEN).catch(Error)
     }
 
+    /**
+     * Randomly set a game status based on the stored list.
+     */
     setRandomPhrase () {
         this.client.user.setPresence(
             { activities: [{ name: this.phrases[Math.floor(Math.random() * this.phrases.length)].text }], status: 'online' })
