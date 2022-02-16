@@ -1,7 +1,25 @@
-module.exports = class Command {
+/**
+ * The base-plate for implementing commands.
+ * @abstract
+ */
+class Command {
     constructor () {
+        /**
+         * The name/identifier of the command.
+         * @type {String}
+         */
         this.name = ''
+
+        /**
+         * The written description of the command.
+         * @type {String}
+         */
         this.description = ''
+
+        /**
+         * The default access-level of the command.
+         * @type {Boolean}
+         */
         this.defaultPermission = true
     }
 
@@ -25,6 +43,11 @@ module.exports = class Command {
         return this
     }
 
+    /**
+     * Set the default access level.
+     * @param {Boolean} defaultPermission true/false can access by default
+     * @returns {Command}
+     */
     setDefaultPermission (defaultPermission) {
         this.defaultPermission = defaultPermission
         return this
@@ -38,3 +61,5 @@ module.exports = class Command {
      */
     run (interaction) {}
 }
+
+module.exports = Command

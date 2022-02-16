@@ -20,6 +20,11 @@ module.exports = class Core {
          * @type {Number}
          */
         this.startTick = new Date().getTime()
+
+        /**
+         * A list of presences to randomly scroll through.
+         * @type {Phrase[]}
+         */
         this.phrases = [new DefaultPhrase(), new Default2Phrase()]
 
         /**
@@ -28,16 +33,17 @@ module.exports = class Core {
          * @private
          */
         this.client = new Client({ intents: Intents.FLAGS.GUILDS })
-        this.client.once('ready', this.onReady.bind(this))
-        this.client.on('error', Error)
-
-        this.login() // Log into Discord
 
         /**
          * The command registry.
          * @type {CommandRegistry}
          */
         this.registry = null
+
+        this.login()
+
+        this.client.once('ready', this.onReady.bind(this))
+        this.client.on('error', Error)
     }
 
     /**
@@ -71,7 +77,7 @@ module.exports = class Core {
     /**
      * Randomly set a game status based on the stored list.
      */
-    setRandomPhrase () {
+    randomPresence () {
         this.client.user.setPresence(
             { activities: [{ name: this.phrases[Math.floor(Math.random() * this.phrases.length)].text }], status: 'online' })
     }
@@ -82,8 +88,8 @@ module.exports = class Core {
         this.getClient().guilds.cache.forEach( // Run a task on each guild in the guild-list after initalization.
             (guild) => this.onGuildInitalize(guild))
 
-        this.setRandomPhrase()
-        setInterval(this.setRandomPhrase.bind(this), 10000)
+        this.randomPresence()
+        setInterval(this.randomPresence.bind(this), 10000)
 
         this.registry = new CommandRegistry(this) // Setup the command handler.
         this.client.on('interactionCreate', this.registry.onCommand.bind(this.registry)) // Setup the event for handling fired events
